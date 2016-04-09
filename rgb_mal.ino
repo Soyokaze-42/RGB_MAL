@@ -41,7 +41,7 @@
 #define enable_conway_life 0
 #define enable_flow_through_pallet 0
 #define enable_center_box 0
-#define enable_lightning_bugs 0
+#define enable_lightning_bugs 1
 #define enable_full_fade 0
 
 #define cylon_case 0
@@ -82,8 +82,12 @@
 // This audjusts how quickly some things happen
 #define FRAMES_PER_SECOND 60
 
-//define percent likely a random cell will be alive for Conway' Game of Life
-#define LIFECHANCE = 20
+// define percent likely a random cell will be alive for Conway' Game of Life
+#define LIFECHANCE 20
+
+// This controls how often the lightning bugs flash
+// one "bug" should average a blink every 20 seconds
+#define NUMBER_OF_LIGHTNING_BUGS 10
 
 // Animation settings end ///////////
 
@@ -344,12 +348,60 @@ void fullrandom() {
   delay(50);
 }
 
-void fireflys() {
+// This currently can only do one bug at a time. This would be a great OOP re-write
+// but I don't feel like doing it right now.
+void lightning_bugs() {
+  unsigned long current_time = millis();
+  static unsigned long next_flash = millis();
+ 
+  if ( current_time < next_flash ) {
+    next_flash = random8(100, 39900)/NUMBER_OF_LIGHTNING_BUGS;
+    unsigned int flashes = random8(1,6);
+    unsigned int interval_len = random8(50,600);
+    unsigned int flash_duration = random8(50,600);
+    unsigned int led = random8(NUM_LEDS * NUM_STRIPS);
+    CRGB color = ColorFromPalette( currentPalette, random8())
 
-  
+    for ( int i = 0; i < flashes; i++) {
+     
+      // Break immediately if the change animation button was pressed
+      if ( break_flag ) {
+        break_flag = 0;
+        fadeall();
+        break;
+      }
+
+      leds[led] = color;
+      FastLED.show();
+      delay(flash_duration);
+      leds[led].nscale8(256);
+
+      // Break immediately if the change animation button was pressed
+      if ( break_flag ) {
+        break_flag = 0;
+        fadeall();
+        break;
+      }
+
+      delay(interval_len);
+    }
+  }
 }
 
-void conways_life_seed() {
+void flow_through_pallet() {
+
+}
+
+void center_box() {
+
+}
+
+void full_fade() {
+
+}
+
+
+void conway_life_seed() {
   uint8_t rndNum = random8( 99 );
   if ( rndNum > LIFECHANCE ) {
     return ( 1 );
@@ -358,7 +410,7 @@ void conways_life_seed() {
   }
 }
 
-void conways_life() {
+void conway_life() {
   static bool lifeChanges[NUM_LEDS][NUM_STRIPS] {}; //initialize all 0
   static CRGBPalette16 startingPallet {}; //initialize null (I hope)
 
@@ -368,7 +420,7 @@ void conways_life() {
     fadeall();
     for ( int i = 0; i < NUM_LEDS; i++ ) {
       for ( int j = 0; j < NUM_STRIPS ) {
-        lifeChanges[i][j] = conways_life_seed();
+        lifeChanges[i][j] = conway_life_seed();
       }
     }
   } else {
