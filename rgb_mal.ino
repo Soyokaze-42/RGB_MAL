@@ -1,31 +1,97 @@
 
+// RGB LED Matrix Animation Library
+// Copyright (C) 2016 Robbie Nichols
+//
+// This program is free software: you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+// more details.
+//
+// You should have received a copy of the GNU General Public License along with
+// this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Some parts were initially copied out of the FastLED examples directory.
+// those are licensed under the MIT license. If you want to use some of this
+// code under a less restrictive license, there is a chance it is from FastLED.
+// 
+// https://github.com/FastLED/FastLED
+//
+// This program is meant to be a collection of easy to reuse and easy to read
+// animations for RGB LED matricies of arbitrary sizes. All the #define 
+// statements can be changed as settings for the program, or the animations can
+// be lifted out for use in another program.
+
+// The hardware config for this program is very simple. Two push buttons, each 
+// connected to one of the BUTTON_PIN pins and ground.
+// The LED strips should be wired as one continuous strip with alternating 
+// directions.
+
+
 #include <FastLED.h>
 
-//7 strips of 6 tripplets each
-//These should be wired as part of the same strip with alternating directions
+#define enable_cylon 1
+#define enable_pallet_fade 1
+#define enable_random_walk 1
+#define enable_fullrandom 1
+#define enable_conway_life 0
+#define enable_flow_through_pallet 0
+#define enable_center_box 0
+#define enable_lightning_bugs 0
+#define enable_full_fade 0
+
+#define cylon_case 0
+#define pallet_fade_case 1
+#define random_walk_case 2
+#define fullrandom_case 3
+#define conway_life_case 4
+#define flow_through_pallet_case 5
+#define center_box_case 6
+#define lightning_bugs_case 7
+#define full_fade_case 8
+#define last_case 9 //this is used to loop. not an animation
+
+// Hardware settings start //////////
+
+// These are settings for FastLED that vary depending on LED Strip
+#define FastLED_LED_Strip_type "WS2811"
+#define FastLED_LED_Color_Order "BRG"
+
+// default 7 strips of 6 LEDs each
 #define NUM_STRIPS 7
 #define NUM_LEDS 6 //LEDs per strip
 
 //Define the data pin
 #define DATA_PIN1 5
 
-//define pins for the buttons
+//define pins for the buttons. Mush have hardware interupts
 #define ANIMATION_BUTTON_PIN 3
 #define PALETTE_BUTTON_PIN 2
 
-//This audjusts how quickly things happen
-#define FRAMES_PER_SECOND 60
-
-//define a constant for the brightness
+// This adjusts how bright the LEDs are
 #define BRIGHTNESS 80
+
+// Hardware settings end ////////////
+
+// Animation settins start //////////
+
+// This audjusts how quickly some things happen
+#define FRAMES_PER_SECOND 60
 
 //define percent likely a random cell will be alive for Conway' Game of Life
 #define LIFECHANCE = 20
 
+// Animation settings end ///////////
+
+
 //Define LED array
 CRGB leds[NUM_LEDS*NUM_STRIPS];
 
-volatile int animation = 1;
+volatile int animation;
 
 CRGBPalette16 currentPalette( HeatColors_p );
 
@@ -37,13 +103,10 @@ bool break_flag = 0;
 
 void setup() {
 
-//  Serial.begin(57600);
-//  Serial.println("resetting");
-
-  random16_add_entropy( random());
+  random16_add_entropy( random() );
   
   //add LEDs to FastLED
-  FastLED.addLeds<WS2811, DATA_PIN1, BRG>(leds, NUM_LEDS*NUM_STRIPS);
+  FastLED.addLeds<FastLED_LED_Strip_type,DATA_PIN1,FastLED_LED_Color_Order>(leds, NUM_LEDS*NUM_STRIPS);
 
   pinMode(ANIMATION_BUTTON_PIN, INPUT_PULLUP);
   pinMode(PALETTE_BUTTON_PIN, INPUT_PULLUP);
@@ -54,6 +117,7 @@ void setup() {
 
   //initialize with a random palette
   change_palette();
+  change_animation();
 }
 
 void change_animation() {
@@ -64,10 +128,19 @@ void change_animation() {
  // If interrupts come faster than 200ms, assume it's a bounce and ignore
  if (interrupt_time - last_interrupt_time > 200) 
  {
-    if (animation < 4) {
-      animation++;
-    } else {
-      animation = 0;
+    if (animation < last_case) animation++;
+    else animation = 0;
+
+    // use a little recursion to skip animations that are disabled
+    if (animation == cylon_case && enable_cylon == FALSE) change_animation();
+    else if (animation == pallet_fade_case && enable_pallet_fade == FALSE) change_animation();
+    else if (animation == random_walk_case && enable_random_walk == FALSE) change_animation();
+    else if (animation == fullrandom_case && enable_fullrandom == FALSE) change_animation();
+    else if (animation == conway_life_case && enable_conway_life == FALSE) change_animation();
+    else if (animation == flow_through_pallet_case && enable_flow_through_pallet == FALSE) change_animation();
+    else if (animation == center_box_case && enable_center_box == FALSE) change_animation();
+    else if (animation == lightning_bugs_case && enable_lightning_bugs == FALSE) change_animation();
+    else if (animation == full_fade_case && enable_full_fade == FALSE) change_animation();
     }
   }
   last_interrupt_time = interrupt_time;
@@ -316,23 +389,35 @@ void conways_life() {
 void loop() {
   
   switch(animation){
-    case 0 :
+    case cylon_case :
       cylon();
       break;
-    case 1 :
-      fire();
-      break;
-    case 2 :
+    case pallet_fade_case :
       pallet_fade();
       break;
-    case 3 :
+    case random_walk_case :
       random_walk();
       break;
-    case 4 :
+    case fullrandom_case :
       fullrandom();
+      break;
+    case conway_life_case :
+      conway_life();
+      break;
+    case flow_through_pallet_case :
+      flow_through_pallet();
+      break;
+    case center_box_case :
+      center_box();
+      break;
+    case lightning_bugs_case :
+      lightning_bugs();
+      break;
+    case full_fade_case :
+      full_fade();
       break;
   }
 
-//  Serial.print("animation: ");
-//  Serial.println(animation);
 }
+
+// vim: syntax=c
