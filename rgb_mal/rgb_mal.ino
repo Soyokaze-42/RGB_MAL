@@ -59,8 +59,8 @@
 // Hardware settings start //////////
 
 // These are settings for FastLED that vary depending on LED Strip
-#define FastLED_LED_Strip_type "WS2811"
-#define FastLED_LED_Color_Order "BRG"
+#define FastLED_LED_Strip_type WS2811
+#define FastLED_LED_Color_Order BRG
 
 // default 7 strips of 6 LEDs each
 #define NUM_STRIPS 7
@@ -111,7 +111,7 @@ void setup() {
   random16_add_entropy( random() );
   
   //add LEDs to FastLED
-  FastLED.addLeds<FastLED_LED_Strip_type,DATA_PIN1,FastLED_LED_Color_Order>(leds, NUM_LEDS*NUM_STRIPS);
+  FastLED.addLeds<FastLED_LED_Strip_type, DATA_PIN1, FastLED_LED_Color_Order>(leds, NUM_LEDS*NUM_STRIPS);
 
   pinMode(ANIMATION_BUTTON_PIN, INPUT_PULLUP);
   pinMode(PALETTE_BUTTON_PIN, INPUT_PULLUP);
