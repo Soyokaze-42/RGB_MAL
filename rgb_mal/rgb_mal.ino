@@ -1,4 +1,3 @@
-
 // RGB LED Matrix Animation Library
 // Copyright (C) 2016 Robbie Nichols
 //
@@ -33,6 +32,8 @@
 
 
 #include <FastLED.h>
+
+#define FALSE 0
 
 #define enable_cylon 1
 #define enable_pallet_fade 1
@@ -145,7 +146,6 @@ void change_animation() {
     else if (animation == center_box_case && enable_center_box == FALSE) change_animation();
     else if (animation == lightning_bugs_case && enable_lightning_bugs == FALSE) change_animation();
     else if (animation == full_fade_case && enable_full_fade == FALSE) change_animation();
-    }
   }
   last_interrupt_time = interrupt_time;
 
@@ -209,8 +209,7 @@ void fadeall() {
   } 
 }
 
-void FillLEDsFromPaletteColors( uint8_t colorIndex)
-{
+void FillLEDsFromPaletteColors( uint8_t colorIndex){
   
   for( int i = 0; i < NUM_LEDS * NUM_STRIPS; i++) {
     leds[i] = ColorFromPalette( currentPalette, colorIndex + sin8(i*16), BRIGHTNESS);
@@ -219,8 +218,7 @@ void FillLEDsFromPaletteColors( uint8_t colorIndex)
 }
 
 
-void ChangePalettePeriodically()
-{
+void ChangePalettePeriodically(){
   uint8_t secondHand = (millis() / 1000) % 60;
   static uint8_t lastSecond = 99;
   
@@ -272,7 +270,7 @@ void cylon(){
   // First slide the led in one direction
   for(int i = 0; i < NUM_STRIPS; i++) {
     // Set the i'th led strip to red 
-    for(int j = 0; j < NUM_LEDS;J++) {
+    for(int j = 0; j < NUM_LEDS;j++) {
       leds[i*NUM_LEDS+j] = CHSV(hue++, 255, 255);
     }
     // Show the leds
@@ -295,7 +293,7 @@ void cylon(){
   // Now go in the other direction.  
   for(int i = NUM_STRIPS-1; i >= 0; i--) {
     // Set the i'th led strip to red 
-    for(int j = 0; j < NUM_LEDS;J++) {
+    for(int j = 0; j < NUM_LEDS;j++) {
       leds[i*NUM_LEDS+j] = CHSV(hue++, 255, 255);
     }
     // Show the leds
@@ -360,7 +358,7 @@ void lightning_bugs() {
     unsigned int interval_len = random8(50,600);
     unsigned int flash_duration = random8(50,600);
     unsigned int led = random8(NUM_LEDS * NUM_STRIPS);
-    CRGB color = ColorFromPalette( currentPalette, random8())
+    CRGB color = ColorFromPalette( currentPalette, random8());
 
     for ( int i = 0; i < flashes; i++) {
      
@@ -389,7 +387,7 @@ void lightning_bugs() {
 }
 
 void flow_through_pallet() {
-
+  
 }
 
 void center_box() {
@@ -401,7 +399,7 @@ void full_fade() {
 }
 
 
-void conway_life_seed() {
+int conway_life_seed() {
   uint8_t rndNum = random8( 99 );
   if ( rndNum > LIFECHANCE ) {
     return ( 1 );
@@ -412,14 +410,14 @@ void conway_life_seed() {
 
 void conway_life() {
   static bool lifeChanges[NUM_LEDS][NUM_STRIPS] {}; //initialize all 0
-  static CRGBPalette16 startingPallet {}; //initialize null (I hope)
+  static CRGBPalette16 startingPalette {}; //initialize null (I hope)
 
   // changing the palette also resets the game
-  if ( startingPallet != currentPallet ) {
-    startingPallet = currentPallet;
+  if ( startingPalette != currentPalette ) {
+    startingPalette = currentPalette;
     fadeall();
     for ( int i = 0; i < NUM_LEDS; i++ ) {
-      for ( int j = 0; j < NUM_STRIPS ) {
+      for ( int j = 0; j < NUM_STRIPS; j++ ) {
         lifeChanges[i][j] = conway_life_seed();
       }
     }
@@ -428,7 +426,7 @@ void conway_life() {
   }
 
     for ( int i = 0; i < NUM_LEDS; i++ ) {
-      for ( int j = 0; j < NUM_STRIPS ) {
+      for ( int j = 0; j < NUM_STRIPS; j++ ) {
         //set all the cells here
       }
     }
