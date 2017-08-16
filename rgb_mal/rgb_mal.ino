@@ -391,7 +391,31 @@ void flow_through_pallet() {
 }
 
 void center_box() {
+  int led_mult;
+  int strip_mult;
+  static uint8_t inc=0;
 
+  for ( int i = 0; i < NUM_LEDS; i++ ) {
+    if ( i > NUM_LEDS/2 ){
+      led_mult = i - (NUM_LEDS - 2 * i);
+    }else{
+      led_mult = i;
+    }
+    for ( int j = 0; j < NUM_STRIPS; j++ ) {
+      if ( j > NUM_STRIPS/2 ){
+        strip_mult = j - (NUM_STRIPS - 2 * j);
+      }else{
+        strip_mult = j;
+      }
+      if ( led_mult < strip_mult ){
+        leds[j*i]=ColorFromPalette( currentPalette, ((led_mult+inc)%16)*16);
+      }else{
+        leds[j*i]=ColorFromPalette( currentPalette, ((strip_mult+inc)%16)*16);
+      }
+    }
+  }
+  inc++;
+  FastLED.show();
 }
 
 void full_fade() {
