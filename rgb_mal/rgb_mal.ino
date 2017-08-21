@@ -41,9 +41,9 @@
 #define enable_fullrandom 1
 #define enable_conway_life 0
 #define enable_flow_through_pallet 0
-#define enable_center_box 0
+#define enable_center_box 1
 #define enable_lightning_bugs 1
-#define enable_full_fade 0
+#define enable_full_fade 1
 
 #define cylon_case 0
 #define pallet_fade_case 1
@@ -151,6 +151,7 @@ void change_animation() {
 
   //blank out the LEDs for the next animation
   fadeall();
+  FastLED.setBrightness(BRIGHTNESS);
 }
 
 void change_palette() {
@@ -402,6 +403,14 @@ void center_box() {
       led_mult = i;
     }
     for ( int j = 0; j < NUM_STRIPS; j++ ) {
+      
+      // Break immediately if the change animation button was pressed
+      if ( break_flag ) {
+        break_flag = 0;
+        fadeall();
+        break;
+      }
+      
       if ( j > NUM_STRIPS/2 ){
         strip_mult = j - (NUM_STRIPS - 2 * j);
       }else{
@@ -419,7 +428,31 @@ void center_box() {
 }
 
 void full_fade() {
+  static uint8_t inc=0;
+  uint8_t bright;
 
+  for ( int i = 0; i < NUM_LEDS; i++ ) {
+    for ( int j = 0; j < NUM_STRIPS; j++ ) {
+      leds[j*i]=ColorFromPalette( currentPalette, ((inc)%16)*16);
+
+
+        // Break immediately if the change animation button was pressed
+        if ( break_flag ) {
+          break_flag = 0;
+          fadeall();
+          break;
+        }
+      }
+    }
+    
+  for ( int k = -BRIGHTNESS; k <= BRIGHTNESS; k++ ) {
+    bright = BRIGHTNESS - abs(k);
+    FastLED.setBrightness(bright);
+    delay (3);
+        
+    inc++;
+    FastLED.show();
+  }
 }
 
 
