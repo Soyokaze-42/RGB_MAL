@@ -104,7 +104,7 @@ CRGBPalette16 targetPalette( PartyColors_p );
 
 //This is a flag that is checked inside loops to make sure the animation change 
 // button hasn't been pressed between loop iterations
-bool break_flag = 0;
+volatile bool break_flag = 0;
 
 void setup() {
 
@@ -288,7 +288,7 @@ void cylon(){
     }
     
     // Wait a little bit before we loop around and do it again
-    delay(15);
+    delay(100);
   }
 
   // Now go in the other direction.  
@@ -311,7 +311,7 @@ void cylon(){
     }
     
     // Wait a little bit before we loop around and do it again
-    delay(15);
+    delay(100);
   }
 }
 
@@ -354,11 +354,11 @@ void lightning_bugs() {
   static unsigned long next_flash = millis();
  
   if ( current_time < next_flash ) {
-    next_flash = random8(100, 39900)/NUMBER_OF_LIGHTNING_BUGS;
+    next_flash = random16(100, 39900)/NUMBER_OF_LIGHTNING_BUGS;
     unsigned int flashes = random8(1,6);
-    unsigned int interval_len = random8(50,600);
-    unsigned int flash_duration = random8(50,600);
-    unsigned int led = random8(NUM_LEDS * NUM_STRIPS);
+    unsigned int interval_len = random16(50,600);
+    unsigned int flash_duration = random16(50,600);
+    unsigned int led = random16(NUM_LEDS * NUM_STRIPS);
     CRGB color = ColorFromPalette( currentPalette, random8());
 
     for ( int i = 0; i < flashes; i++) {
