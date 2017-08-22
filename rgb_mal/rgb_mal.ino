@@ -41,9 +41,9 @@
 #define enable_fullrandom 1
 #define enable_conway_life 0
 #define enable_flow_through_pallet 0
-#define enable_center_box 1
-#define enable_lightning_bugs 1
-#define enable_full_fade 1
+#define enable_center_box 0
+#define enable_lightning_bugs 0
+#define enable_full_fade 0
 
 #define cylon_case 0
 #define pallet_fade_case 1
