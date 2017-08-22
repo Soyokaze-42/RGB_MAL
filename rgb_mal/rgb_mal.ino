@@ -446,13 +446,17 @@ void full_fade() {
     }
     
   for ( int k = -BRIGHTNESS; k <= BRIGHTNESS; k++ ) {
+    // Break immediately if the change animation button was pressed
+    if ( break_flag ) {
+      break_flag = 0;
+      fadeall();
+      break;
+    }
     bright = BRIGHTNESS - abs(k);
     FastLED.setBrightness(bright);
-    delay (3);
-        
-    inc++;
     FastLED.show();
   }
+  inc++;
 }
 
 
