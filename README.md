@@ -1,5 +1,5 @@
 # RGB_MAL
-This is an RGB Matrix Animation Library for the Arduino built with FastLED to use with a two button interface.
+This is an RGB Matrix Animation sketch for the Arduino built with FastLED to use with a two button interface.
 
 Many example animations available online (at least most of the ones I found) are not generally useful. 
 Some are good examples of efficient ways to drive an RGB LED Matrix, but there is a fair amount of rework required.
